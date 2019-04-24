@@ -1,7 +1,7 @@
 import discord
 import logging
 
-from item import build_item_message
+from item_search import search_for_item
 from user_vals import TOKEN
 from exceptions import ItemSearchException
 
@@ -26,14 +26,14 @@ async def on_message(message):
         search = message.content.replace('!item ', '')
         channel = message.channel
         try:
-            msg = build_item_message(search)
+            msg = search_for_item(search)
             if msg is not None:
                 await channel.send(embed=msg)
             else:
                 await channel.send('I could not find Item: {}'.format(search))
         except ItemSearchException as e:
             logger.error(e, exc_info=True)
-            await channel.send('{}. The error has been logged.'.format(e))
+            await channel.send('{}'.format(e))
 
 
 
