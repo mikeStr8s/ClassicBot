@@ -21,7 +21,7 @@ async def on_message(message):
         if msg is not None:
             await channel.send(embed=msg)
         else:
-            await channel.send('I could now find Item: {}'.format(search))
+            await channel.send('I could not find Item: {}'.format(search))
 
 
 @client.event
