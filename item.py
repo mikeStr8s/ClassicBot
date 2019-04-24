@@ -2,6 +2,7 @@ import json
 import requests
 import re
 
+from exceptions import ItemSearchException
 from discord import Embed
 from bs4 import BeautifulSoup, Tag, Comment, NavigableString
 
@@ -50,7 +51,12 @@ def open_search(query_string):
     response = json.loads(requests.get(OPEN_SEARCH_URL.format(query_string)).content)
     results = []
     for idx, item in enumerate(response[ITEM_IDX]):
-        results.append(get_open_search_results_dict(response, item, idx))
+        try:
+            results.append(get_open_search_results_dict(response, item, idx))
+        except IndexError:
+            continue
+        except:
+            raise ItemSearchException('An unexpected exception has occurred during item search.')
     return results
 
 

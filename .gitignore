@@ -3,3 +3,4 @@ venv
 .DS_Store
 user_vals.py
 __pycache__
+discord.log

@@ -1,12 +1,20 @@
 import discord
-import re
+import logging
 
 from item import build_item_message
 from user_vals import TOKEN
+from exceptions import ItemSearchException
+
 
 TOKEN = TOKEN
 
 client = discord.Client()
+
+logger = logging.getLogger('discord')
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 
 @client.event
@@ -17,11 +25,16 @@ async def on_message(message):
     if message.content.startswith('!item'):
         search = message.content.replace('!item ', '')
         channel = message.channel
-        msg = build_item_message(search)
-        if msg is not None:
-            await channel.send(embed=msg)
-        else:
-            await channel.send('I could not find Item: {}'.format(search))
+        try:
+            msg = build_item_message(search)
+            if msg is not None:
+                await channel.send(embed=msg)
+            else:
+                await channel.send('I could not find Item: {}'.format(search))
+        except ItemSearchException as e:
+            logger.error(e, exc_info=True)
+            await channel.send('{}. The error has been logged.'.format(e))
+
 
 
 @client.event

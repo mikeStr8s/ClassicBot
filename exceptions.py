@@ -1,0 +1,2 @@
+class ItemSearchException(Exception):
+    pass
