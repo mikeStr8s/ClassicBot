@@ -2,6 +2,7 @@ import discord
 import logging
 
 from item_search import search_for_item
+from ability_search import search_for_ability
 from user_vals import TOKEN
 from exceptions import ItemSearchException
 
@@ -35,7 +36,12 @@ async def on_message(message):
             logger.error(e, exc_info=True)
             await channel.send('{}'.format(e))
 
-
+    if message.content.startswith('!ability'):
+        search = message.content.replace('!ability ', '')
+        channel = message.channel
+        msgs = search_for_ability(search)
+        for msg in msgs:
+            await channel.send(embed=msg)
 
 @client.event
 async def on_ready():
