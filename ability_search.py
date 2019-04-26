@@ -3,7 +3,7 @@ import requests
 
 from discord import Embed, Colour
 
-from item_search import parse_tooltip
+from item_search import parse_tooltip, clean_tooltip
 
 
 ABILITY = 'https://classic.wowhead.com/abilities/name:{}'
@@ -19,9 +19,9 @@ def search_for_ability(query_string):
     ability_id = get_ability_id(query_string)
     ability = get_ability(ability_id)
     ability['id'] = ability_id
-    ability['tooltip'] = parse_tooltip(ability['tooltip'])[1:]
+    ability['tooltip'] = parse_tooltip(clean_tooltip(ability['tooltip']))[1:]
     if ability['buff']:
-        ability['buff'] = parse_tooltip(ability['buff'])[1:]
+        ability['buff'] = parse_tooltip(ability['buff'])
     return build_embed(ability)
 
 def build_embed(tt):
