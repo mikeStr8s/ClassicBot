@@ -117,6 +117,7 @@ h2 {
 }
 
 #ContentContainer {
+	text-align: center;
 	position: relative;
 	height: auto;
     overflow: auto;
@@ -129,6 +130,8 @@ h2 {
 
 /* Middle column */
 .column.middle {
+	display: inline-block;
+	text-align: left;
 	float: middle;
     display: inline-block;
     background:rgba(10,10,10,0.4);
