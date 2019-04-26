@@ -31,6 +31,9 @@ There are a lot of features that I would still like to have be a part of this bo
 **Future features include, but are not limited to:**
 - Allowing specific ranks of abilities to be queried by users.
 - Allowing talents, and their ranks to be queried by users.
+- Replace command specific queries with a dynamic "build your own" style.
+  - `!classic` **weapon** *nightfall*
+  - `!classic` **spell** *rain of fire* rank 1
 
 ## Contribution
 Contribution information will be added once an official v1.0.0 of ClassicBot is released.
