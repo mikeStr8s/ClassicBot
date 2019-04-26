@@ -7,7 +7,5 @@ install:
 # command to run tests
 script:
   - coverage run tests.py
-env:
-  - CODECOV_TOKEN="5dcc6502-77e9-4fd2-8aa2-cead6146496c"
 after_success:
   - codecov
