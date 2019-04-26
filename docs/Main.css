@@ -1,0 +1,152 @@
+body{
+    filter: hue-rotate(175deg);
+    background-color: rgb(14, 32, 38);
+    background-image: url(https://bnetcmsus-a.akamaihd.net/cms/template_resource/5ZB6M021WNEZ1465955329787.jpg);
+	background-repeat: no-repeat;
+    color: #ebdec2;
+    background-position: 50%, 0%;
+    font-family: OpenSans;
+	height: 94vh;
+	top: 0;
+}
+
+@font-face {
+    font-family: Semplicita;
+    src: url(https://worldofwarcraft.akamaized.net/static/fonts/semplicita-bold.woff2);
+}
+
+@font-face {
+	font-family: OpenSans;
+	src: url(https://worldofwarcraft.akamaized.net/static/fonts/opensans.woff);
+}
+
+@font-face {
+	font-family: OpenSansBold;
+	src: url(https://worldofwarcraft.akamaized.net/static/fonts/opensans-bold.woff);
+}
+
+@font-face {
+    font-family: PermMarker;
+    src: url(https://fonts.gstatic.com/s/permanentmarker/v7/9vYsg5VgPHKK8SXYbf3sMsW72xVeg1938eUHStY_AJ4.woff2);
+}
+
+h2 {
+	font-family: OpenSansBold;
+}
+
+.header {
+    text-align: center;
+    font-family: 'Semplicita';
+    font-size: 3em;
+    height: 3em;
+}
+
+/* The navbar container */
+.menu {
+    overflow: hidden;
+    line-height: 32px;
+    width: 1348px;
+    margin: 0 auto;
+    position: relative;
+    text-align: center;
+    top: -20px;
+	left: 50%;
+	margin-left: -674px;
+    padding: 0;
+}
+
+#topnav {
+    height: 32px;
+    top: 11px;
+}
+
+
+#midItems {
+    background-image: url(http://us.battle.net/wow/static/images/warlords-of-draenor-6y1fz/nav/bg-nav-bar-mid.png);
+    background-repeat: no-repeat;
+	border-image-outset: 0px;
+    border-image-repeat: stretch;
+    border-image-slice: 100%;
+    border-image-source: none;
+    border-image-width: 1;
+    width: 822px;
+    height: 150px;
+    display: inblock;
+    margin: 0 auto;
+	float: middle;
+}
+
+#leftcap {
+	background-image: url(http://us.battle.net/wow/static/images/warlords-of-draenor-6y1fz/nav/nav-endcap-left.png);
+	width: 263px;
+    height: 150px;
+	float: left;
+    overflow: hidden;
+}
+
+#rightcap {
+	background-image: url(http://us.battle.net/wow/static/images/warlords-of-draenor-6y1fz/nav/nav-endcap-right.png);
+    width: 263px;
+    height: 150px;
+    overflow: hidden;
+	float: right;
+}
+
+/* Navbar links */
+.menu a {
+    font-family: 'PermMarker';
+    font-size: 22px;
+    text-shadow: 0px .5px 0px rgba(200,200,200,.3), 0px -1px 0px rgba(0,0,0,.7);
+    top: 43px;
+    height: 63px;
+    float: middle;
+    display: inline-block;
+    text-align: center;
+    padding: 20px 16px;
+    text-decoration: none;
+    color: rgb(229, 49, 1);
+}
+
+/* Links - change color on hover */
+.menu a:hover {
+    color: rgb(255, 126, 0);
+}
+
+.menu a.using {
+    color: rgb(255, 126, 0);
+}
+
+#ContentContainer {
+	position: relative;
+	height: auto;
+    overflow: auto;
+}
+
+/* Left and right column */
+.column.side {
+    text-align: center;
+}
+
+/* Middle column */
+.column.middle {
+	float: middle;
+    display: inline-block;
+    background:rgba(10,10,10,0.4);
+    border-radius: 25px;
+    max-width: 1120px;
+	width: 90vl;
+    padding: 2vh;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media (max-width: 600px) {
+    .column.side, .column.middle {
+        width: 100%;
+    }
+}
+}
