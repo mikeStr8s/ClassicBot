@@ -4,7 +4,6 @@ attrs==19.1.0
 beautifulsoup4==4.7.1
 certifi==2019.3.9
 chardet==3.0.4
-coverage==4.5.3
 discord==1.0.1
 discord.py==1.0.1
 idna==2.8
