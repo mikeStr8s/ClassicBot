@@ -3,7 +3,7 @@ import requests
 
 from discord import Embed, Colour
 
-from item_search import parse_tooltip, clean_tooltip
+from tooltip_parser import parse_tooltip, clean_tooltip
 
 
 ABILITY = 'https://classic.wowhead.com/abilities/name:{}'
@@ -13,15 +13,14 @@ IMAGE = 'https://wow.zamimg.com/images/wow/icons/large/{0}.jpg'
 BEGIN = 'WH.Gatherer.addData('
 END = ')'
 
-# TODO: Pyroblast buff is not displaying properly
 
 def search_for_ability(query_string):
     ability_id = get_ability_id(query_string)
     ability = get_ability(ability_id)
     ability['id'] = ability_id
-    ability['tooltip'] = parse_tooltip(clean_tooltip(ability['tooltip']))[1:]
+    ability['tooltip'] = list(filter(None, parse_tooltip(clean_tooltip(ability['tooltip']))))
     if ability['buff']:
-        ability['buff'] = parse_tooltip(ability['buff'])
+        ability['buff'] = list(filter(None, parse_tooltip(clean_tooltip(ability['buff']))))
     return build_embed(ability)
 
 def build_embed(tt):
