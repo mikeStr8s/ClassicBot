@@ -1,6 +1,6 @@
 import json
-import requests
 
+import requests
 from discord import Embed, Colour
 
 from exceptions import ItemSearchError
@@ -29,14 +29,14 @@ def search_for_item(query_string):
     item_id = get_item_id(query_string)
     item = get_item(item_id)
     return Embed(title=item['name'], url=ITEM_URL.format(item_id), description='\n'.join(item['tooltip']),
-                 colour=COLORS[item['quality']]). set_thumbnail(url=IMAGE.format(item['icon']))
+                 colour=COLORS[item['quality']]).set_thumbnail(url=IMAGE.format(item['icon']))
 
 
 def get_item_id(query_string):
     response = json.loads(requests.get(OPEN_SEARCH.format(query_string)).content)
-    item_list = [x for x in map(lambda x : x.lower(), response[ITEM])]
+    item_list = [x for x in map(lambda x: x.lower(), response[ITEM])]
     try:
-        idx = item_list.index(' (item)'.join([query_string.lower(),'']))
+        idx = item_list.index(' (item)'.join([query_string.lower(), '']))
     except ValueError:
         raise ItemSearchError('No item matching "{}" was found'.format(query_string))
     else:

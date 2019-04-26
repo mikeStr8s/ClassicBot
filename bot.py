@@ -1,10 +1,9 @@
 import discord
 
-from item_search import search_for_item
 from ability_search import search_for_ability
-from user_vals import TOKEN
 from exceptions import ItemSearchError, AbilitySearchError
-
+from item_search import search_for_item
+from user_vals import TOKEN
 
 TOKEN = TOKEN
 
@@ -36,6 +35,7 @@ async def on_message(message):
         else:
             for msg in msgs:
                 await channel.send(embed=msg)
+
 
 @client.event
 async def on_ready():

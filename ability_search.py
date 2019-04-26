@@ -1,11 +1,10 @@
 import json
-import requests
 
+import requests
 from discord import Embed, Colour
 
-from tooltip_parser import parse_tooltip, clean_tooltip
 from exceptions import AbilitySearchError
-
+from tooltip_parser import parse_tooltip, clean_tooltip
 
 ABILITY = 'https://classic.wowhead.com/abilities/name:{}'
 TOOL_TIP = 'https://classic.wowhead.com/tooltip/spell/{}&json&power'
@@ -23,19 +22,21 @@ def search_for_ability(query_string):
     ability = get_ability(ability_id)
     return build_embed(ability)
 
+
 def build_embed(tt):
     embeds = [Embed(title=tt['name'], url=EXTERN.format(tt['id']), description='\n'.join(tt['tooltip']),
-              colour=Colour(0xffd100)).set_thumbnail(url=IMAGE.format(tt['icon']))]
+                    colour=Colour(0xffd100)).set_thumbnail(url=IMAGE.format(tt['icon']))]
     if isinstance(tt['buff'], list):
         embeds.append(Embed(title=tt['name'], description='\n'.join(tt['buff']), colour=Colour(0xffd100)))
     return embeds
+
 
 def get_ability_id(query_string):
     response = requests.get(ABILITY.format(query_string))
     content = response.content.decode('utf-8')
     start = content.index(BEGIN)
     end = content.find(END, start)
-    ability_data = json.loads(content[len(BEGIN)+start:end].join(['[',']']))
+    ability_data = json.loads(content[len(BEGIN) + start:end].join(['[', ']']))
     highest_rank = 0
     highest_rank_id = 0
     for ability_id, ability_info in ability_data[2].items():

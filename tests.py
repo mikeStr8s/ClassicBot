@@ -2,7 +2,6 @@ import unittest
 
 import ability_search as AS
 import item_search as IS
-import tooltip_parser as TP
 
 ABILITY_TT = [' ', '440 Mana 35 yd range', '6 sec cast', 'Requires Mage', 'Requires level 60',
               'Hurls an immense fiery boulder that causes (100% of Spell power) Fire damage and an additional (60% of Spell power) Fire damage over 12 sec.']
@@ -49,6 +48,7 @@ class TestAbilitySearch(unittest.TestCase):
         else:
             assert False, 'There was an ability associated with the garbage string'
 
+
 class TestItemSearch(unittest.TestCase):
     def test_get_item_id(self):
         item_id = IS.get_item_id(ITEM_NAME)
@@ -65,6 +65,7 @@ class TestItemSearch(unittest.TestCase):
             assert True
         else:
             assert False, 'There was no embed object created for item search'
+
 
 if __name__ == '__main__':
     unittest.main()

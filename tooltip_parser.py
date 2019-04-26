@@ -2,9 +2,9 @@ import re
 
 from bs4 import BeautifulSoup, NavigableString, Tag
 
-
 NAMED_LINK = '[{}]({})'
 BASE = 'https://classic.wowhead.com'
+
 
 def clean_tooltip(tooltip):
     tooltip = tooltip.replace('\n', '')
@@ -78,8 +78,10 @@ def parse_navigable_string(items, count):
 def parse_a(tag):
     return NAMED_LINK.format(tag.text, BASE + tag.attrs['href'])
 
+
 def parse_span(tag):
     return parse_content(tag.contents, internal=True)
+
 
 def parse_div(tag):
     if tag.attrs['class'] == ['q0', 'indent']:
@@ -89,6 +91,7 @@ def parse_div(tag):
     else:
         return parse_content(tag.contents, internal=True)
 
+
 def parse_table(tag):
     container = []
     for row in tag.select('tr'):
@@ -97,6 +100,7 @@ def parse_table(tag):
             pieces.append(' '.join(parse_content(item.contents)))
         container.append(' '.join(pieces))
     return '\n'.join(container)
+
 
 def parse_sell_price(tag):
     pieces = []
@@ -108,7 +112,8 @@ def parse_sell_price(tag):
                 pieces.append(item.text + 's')
             else:
                 pieces.append(item.text + 'c')
-    return ' '.join(['Sell Price:']+pieces)
+    return ' '.join(['Sell Price:'] + pieces)
+
 
 def check_keyword_formatting(tt, keyword):
     transformed = []
@@ -120,8 +125,8 @@ def check_keyword_formatting(tt, keyword):
                 break
             if idx > 0:
                 try:
-                    if '\n' not in line[idx-2:idx]:
-                        line = line[:idx]+'\n'+line[idx:]
+                    if '\n' not in line[idx - 2:idx]:
+                        line = line[:idx] + '\n' + line[idx:]
                         idx = idx + len(keyword)
                 except IndexError:
                     idx = idx + len(keyword)
