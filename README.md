@@ -2,7 +2,7 @@
 ClassicBot was designed to enhance Classic World of Warcraft communities by allowing them to link directly to in game tooltips in their discord servers. Now when you get the final piece to craft "Sulfuras, Hand of Ragnaros", but no one is online to see your achievement you can link the item straight into discord so that as many eyes as possible can see the item in all its wonderful glory.
 
 ![build](https://travis-ci.org/mikeStr8s/ClassicBot.svg?branch=master) 
-![codecov](https://codecov.io/gh/mikeStr8s/ClassicBot/branch/master/graph/badge.svg)](https://codecov.io/gh/mikeStr8s/ClassicBot)
+[![codecov](https://codecov.io/gh/mikeStr8s/ClassicBot/branch/master/graph/badge.svg)](https://codecov.io/gh/mikeStr8s/ClassicBot)
 
 ## Overview
 ClassicBot functionality is pretty straight forward, you input a command and get responses back depending on the input.
