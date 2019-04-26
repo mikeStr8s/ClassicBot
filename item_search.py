@@ -3,7 +3,7 @@ import requests
 
 from discord import Embed, Colour
 
-from exceptions import ItemSearchException
+from exceptions import ItemSearchError
 from tooltip_parser import parse_tooltip, clean_tooltip, check_keyword_formatting
 
 OPEN_SEARCH = 'http://classic.wowhead.com/search?q={0}&opensearch'
@@ -43,7 +43,7 @@ def open_search(query_string):
     try:
         idx = item_list.index(' (item)'.join([query_string.lower(),'']))
     except ValueError:
-        raise ItemSearchException('There was no value in the search results that matched the query exactly.')
+        raise ItemSearchError('No item matching "{}" was found'.format(query_string))
     else:
         return response[ATTRS][idx][ITEM]
 

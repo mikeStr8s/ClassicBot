@@ -4,6 +4,7 @@ import requests
 from discord import Embed, Colour
 
 from tooltip_parser import parse_tooltip, clean_tooltip
+from exceptions import AbilitySearchError
 
 
 ABILITY = 'https://classic.wowhead.com/abilities/name:{}'
@@ -15,7 +16,10 @@ END = ')'
 
 
 def search_for_ability(query_string):
-    ability_id = get_ability_id(query_string)
+    try:
+        ability_id = get_ability_id(query_string)
+    except ValueError:
+        raise AbilitySearchError('No ability matching "{}" was found'.format(query_string))
     ability = get_ability(ability_id)
     ability['id'] = ability_id
     ability['tooltip'] = list(filter(None, parse_tooltip(clean_tooltip(ability['tooltip']))))
