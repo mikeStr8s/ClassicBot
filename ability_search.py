@@ -21,10 +21,6 @@ def search_for_ability(query_string):
     except ValueError:
         raise AbilitySearchError('No ability matching "{}" was found'.format(query_string))
     ability = get_ability(ability_id)
-    ability['id'] = ability_id
-    ability['tooltip'] = list(filter(None, parse_tooltip(clean_tooltip(ability['tooltip']))))
-    if ability['buff']:
-        ability['buff'] = list(filter(None, parse_tooltip(clean_tooltip(ability['buff']))))
     return build_embed(ability)
 
 def build_embed(tt):
@@ -55,5 +51,9 @@ def get_ability_id(query_string):
 
 
 def get_ability(ability_id):
-    response = json.loads(requests.get(TOOL_TIP.format(ability_id)).content)
-    return response
+    ability = json.loads(requests.get(TOOL_TIP.format(ability_id)).content)
+    ability['id'] = ability_id
+    ability['tooltip'] = list(filter(None, parse_tooltip(clean_tooltip(ability['tooltip']))))
+    if ability['buff']:
+        ability['buff'] = list(filter(None, parse_tooltip(clean_tooltip(ability['buff']))))
+    return ability
