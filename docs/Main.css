@@ -3,7 +3,7 @@ body{
     background-color: rgb(14, 32, 38);
     background-image: url(https://bnetcmsus-a.akamaihd.net/cms/template_resource/5ZB6M021WNEZ1465955329787.jpg);
 	background-repeat: no-repeat;
-    color: #ebdec2;
+    color: white;
     background-position: 50%, 0%;
     font-family: OpenSans;
 	height: 94vh;
@@ -133,12 +133,12 @@ h2 {
 	display: inline-block;
 	text-align: left;
 	float: middle;
-    display: inline-block;
     background:rgba(10,10,10,0.4);
     border-radius: 25px;
     max-width: 1120px;
 	width: 90vl;
     padding: 2vh;
+	overflow: auto;
 }
 
 .row:after {
