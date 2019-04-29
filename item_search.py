@@ -4,7 +4,8 @@ import requests
 from discord import Embed, Colour
 
 from exceptions import ItemSearchError
-from tooltip_parser import parse_tooltip, clean_tooltip, check_keyword_formatting
+from new_parser import parse_tooltip, clean_tooltip
+from tt_builder import build_tooltip_image
 
 OPEN_SEARCH = 'http://classic.wowhead.com/search?q={0}&opensearch'
 SEARCH = 'https://classic.wowhead.com/tooltip/item/{0}&json&power'
@@ -28,8 +29,9 @@ COLORS = {
 def search_for_item(query_string):
     item_id = get_item_id(query_string)
     item = get_item(item_id)
-    return Embed(title=item['name'], url=ITEM_URL.format(item_id), description='\n'.join(item['tooltip']),
-                 colour=COLORS[item['quality']]).set_thumbnail(url=IMAGE.format(item['icon']))
+    build_tooltip_image(item['tooltip'])
+    # return Embed(title=item['name'], url=ITEM_URL.format(item_id), description='\n'.join(item['tooltip']),
+    #              colour=COLORS[item['quality']]).set_thumbnail(url=IMAGE.format(item['icon']))
 
 
 def get_item_id(query_string):
@@ -46,7 +48,7 @@ def get_item_id(query_string):
 def get_item(item_id):
     item = json.loads(requests.get(SEARCH.format(item_id)).content)
     tooltip = parse_tooltip(clean_tooltip(item['tooltip']))
-    for word in KEYWORDS:
-        tooltip = check_keyword_formatting(tooltip, word)
+    # for word in KEYWORDS:
+    #     tooltip = check_keyword_formatting(tooltip, word)
     item['tooltip'] = tooltip
     return item

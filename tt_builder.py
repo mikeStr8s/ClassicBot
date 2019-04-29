@@ -21,18 +21,6 @@ COLORS = {
 }
 
 def build_tooltip_image(text_list):
-    text_list = [
-        {'color': COLORS['q4'], 'text': 'Nightfall'},
-        {'color': COLORS['q'], 'text': 'Item Level 70'},
-        {'color': COLORS['q1'], 'text': 'Binds when equipped'},
-        {'color': COLORS['q1'], 'text': ['Two-Hand', 'Axe']},
-        {'color': COLORS['q1'], 'text': ['187 - 282 Damage', 'Speed 3.50']},
-        {'color': COLORS['q1'], 'text': '(67.00 damage per second)'},
-        {'color': COLORS['q1'], 'text': 'Durability 120 / 120'},
-        {'color': COLORS['q1'], 'text': 'Requires Level 60'},
-        {'color': COLORS['q2'], 'text': 'Chance on hit: Spell damage taken by target increases by 15% for 5 sec.'},
-        {'color': COLORS['q1'], 'text': 'Sell Price: 12g 91s 12c'}
-    ]
     num_lines = get_lines_of_text(text_list)
     size = (WIDTH, LINE_HEIGHT * num_lines + LARGE_PADDING)
     img = Image.new('RGB', size,color=BG_COLOR)
@@ -40,10 +28,10 @@ def build_tooltip_image(text_list):
     for item in text_list:
         if isinstance(item['text'], str) and len(item['text']) > MAX_CHARS:
             for text in textwrap.wrap(item['text'], MAX_CHARS):
-                add_text(img, text, pos, item['color'])
+                add_text(img, text, pos, COLORS[item['color']])
                 pos += LINE_HEIGHT
         else:
-            add_text(img, item['text'], pos, item['color'])
+            add_text(img, item['text'], pos, COLORS[item['color']])
             pos += LINE_HEIGHT
     img = add_border(img)
     img.save('tooltip.png')
