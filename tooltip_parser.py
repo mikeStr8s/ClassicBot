@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup, NavigableString, Tag
 
 NAMED_LINK = '[{}]({})'
 BASE = 'https://classic.wowhead.com'
-QUALITY = ['q', 'q0', 'q2', 'q3', 'q4', 'q5']
+QUALITY = ['q', 'q0', 'q1', 'q2', 'q3', 'q4', 'q5']
 
 
 def clean_tooltip(tooltip):
@@ -12,6 +12,7 @@ def clean_tooltip(tooltip):
     tooltip = tooltip.replace('    ', '')
     tooltip = re.sub('(<!--)([a-z0-9:]+)(-->)', '', tooltip)
     tooltip = re.sub('<br(\s\/)*>', '', tooltip)
+    tooltip = re.sub('(<a ([a-z0-9\/=\-\" ])+>)|(<\/a>)', '', tooltip)
     return tooltip
 
 
@@ -19,7 +20,7 @@ def parse_tooltip(tooltip):
     soup = BeautifulSoup(tooltip, 'html.parser')
     body = []
     for content in soup.children:
-        body = body + parse_content(BeautifulSoup(str(content.next.next)[4:-5], 'html.parser').contents)
+        body.extend(dispatch_element(BeautifulSoup(str(content.next.next)[4:-5], 'html.parser')))
     return body
 
 
@@ -63,6 +64,61 @@ def parse_content(content, modifier=None):
                 count += 1
     return container
 
+
+def dispatch_element(element, is_text=False):
+    container = []
+    for elem in element.contents:
+        tag = elem.name
+        if tag is not None:
+            if tag == 'table':
+                continue
+            elif tag == 'div':
+                continue
+            elif not isinstance(elem, NavigableString) and no_nav_strings(elem.contents):
+                for e in elem.contents:
+                    container.extend(dispatch_element(e))
+                continue
+            else:
+                 container.append(parse_text_element(elem))
+        else:
+            if is_text:
+                return str(elem)
+            container.append(parse_nav_string(elem))
+    return container
+
+
+def parse_text_element(element, color=QUALITY[2]):
+    try:
+        attrs = element.attrs['class']
+        color = intersection(attrs, QUALITY)[0]
+        if len(attrs) > 1:
+            attrs.remove(attrs.index(color))
+            args = attrs
+            return build_tooltip_line_item(color=color, text=dispatch_element(element, True), args=args)
+        else:
+            return build_tooltip_line_item(color=color, text=dispatch_element(element, True))
+    except KeyError:
+        return build_tooltip_line_item(color=color, text=dispatch_element(element, True))
+
+
+def parse_nav_string(element):
+    return build_tooltip_line_item(color=QUALITY[2], text=str(element))
+
+
+def no_nav_strings(elements):
+    for element in elements:
+        if isinstance(element, NavigableString):
+            return False
+    return True
+
+
+def intersection(one, two):
+    temp = set(two)
+    return [x for x in one if x in temp]
+
+
+def build_tooltip_line_item(color, text, args=None):
+    return {'color': color, 'text': text, 'args': args}
 
 
 def parse_text(element, color='q1'):
