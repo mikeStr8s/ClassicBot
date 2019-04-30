@@ -24,59 +24,26 @@ def parse_tooltip(tooltip):
     return body
 
 
-def parse_content(content, modifier=None):
-    count = 0
-    container = []
-    while count < len(content):
-        item = content[count]
-        if isinstance(item, NavigableString):
-            if modifier:
-                container.append(parse_text(item, modifier))
-            else:
-                container.append(parse_text(item))
-            count +=1
-        else:
-            if item.name == 'b' or item.name == 'span':
-                if modifier:
-                    contents = parse_text(item, modifier)
-                else:
-                    contents = parse_text(item)
-                if isinstance(item, list):
-                    container.extend(contents)
-                else:
-                    container.append(contents)
-                count += 1
-            elif item.name == 'table':
-                for row in item.select('tr'):
-                    items = []
-                    for elem in row.contents:
-                        items.append(elem.text)
-                    container.append({'color': 'q1', 'text': items})
-                count += 1
-            elif item.name == 'div':
-                if 'indent' in item.attrs['class']:
-                    indent = parse_content(item.contents, 'q0')
-                    for parse in indent:
-                        parse['indent'] = True
-                    container.extend(indent)
-                count += 1
-            else:
-                count += 1
-    return container
-
-
 def dispatch_element(element, is_text=False):
     container = []
     for elem in element.contents:
         tag = elem.name
         if tag is not None:
             if tag == 'table':
+                container.append(parse_table(elem))
                 continue
-            elif tag == 'div':
+            elif tag == 'div' and elem.attrs['class'] == ['whtt-sellprice']:
+                container.append(parse_sell_price(elem))
                 continue
             elif not isinstance(elem, NavigableString) and no_nav_strings(elem.contents):
+                attrs = elem.attrs['class']
+                color = intersection(attrs, QUALITY)[0]
+                if len(attrs) > 1:
+                    attrs.remove(color)
+                else:
+                    attrs=None
                 for e in elem.contents:
-                    container.extend(dispatch_element(e))
+                    container.append(parse_text_element(e, color=color, args=attrs))
                 continue
             else:
                  container.append(parse_text_element(elem))
@@ -87,18 +54,36 @@ def dispatch_element(element, is_text=False):
     return container
 
 
-def parse_text_element(element, color=QUALITY[2]):
+def parse_table(element):
+    row = element.next
+    container = []
+    for elem in row.contents:
+        container.append(elem.text)
+    return build_tooltip_line_item(color=QUALITY[2], text=container, args=['split'])
+
+
+def parse_sell_price(element):
+    container = []
+    for elem in element:
+        try:
+            container.append(elem.text)
+        except AttributeError:
+            container.append(str(elem))
+    container = list(filter(lambda a: a != ' ', container))
+    return build_tooltip_line_item(color=QUALITY[2], text=container, args=['money'])
+
+
+def parse_text_element(element, color=QUALITY[2], args=None):
     try:
         attrs = element.attrs['class']
         color = intersection(attrs, QUALITY)[0]
         if len(attrs) > 1:
             attrs.remove(attrs.index(color))
-            args = attrs
-            return build_tooltip_line_item(color=color, text=dispatch_element(element, True), args=args)
+            return build_tooltip_line_item(color=color, text=dispatch_element(element, True), args=attrs)
         else:
-            return build_tooltip_line_item(color=color, text=dispatch_element(element, True))
+            return build_tooltip_line_item(color=color, text=dispatch_element(element, True), args=args)
     except KeyError:
-        return build_tooltip_line_item(color=color, text=dispatch_element(element, True))
+        return build_tooltip_line_item(color=color, text=dispatch_element(element, True), args=args)
 
 
 def parse_nav_string(element):
@@ -121,84 +106,38 @@ def build_tooltip_line_item(color, text, args=None):
     return {'color': color, 'text': text, 'args': args}
 
 
-def parse_text(element, color='q1'):
-    obj = {'color': color}
-    if isinstance(element, NavigableString):
-        obj['text'] = str(element)
-        return obj
-    else:
-        obj['text'] = element.text
-        try:
-            attrs = element.attrs['class']
-            for q in QUALITY:
-                if q in attrs:
-                    obj['color'] = q
-                    break
-        except KeyError:
-            return obj
-        else:
-            return obj
-
 
 def check_keyword_formatting(tt, keyword):
     transformed = []
     for line in tt:
         text = line['text']
-        if keyword == '.(':
+        idx = 0
+        while idx < len(text):
             if isinstance(text, list):
-                transformed.append(line)
-                continue
-            broken = set_bonus_break(text)
+                break
+            idx = text.find(keyword, idx)
+            if idx == -1:
+                break
+            if idx > 0:
+                try:
+                    text = text[:idx] + '\n' + text[idx:]
+                    idx = idx + len(keyword)
+                except IndexError:
+                    idx = idx + len(keyword)
+            else:
+                idx = idx + len(keyword)
+        if isinstance(text, list):
+            temp = line
+            temp['text'] = text
+            transformed.append(temp)
+        else:
+            broken = text.split('\n')
             if len(broken) > 1:
                 for seg in broken:
                     temp = {'color': line['color'], 'text': seg}
                     transformed.append(temp)
             else:
-                transformed.append(line)
-        else:
-            idx = 0
-            while idx < len(text):
-                if isinstance(text, list):
-                    break
-                idx = text.find(keyword, idx)
-                if idx == -1:
-                    break
-                if idx > 0:
-                    try:
-                        text = text[:idx] + '\n' + text[idx:]
-                        idx = idx + len(keyword)
-                    except IndexError:
-                        idx = idx + len(keyword)
-                else:
-                    idx = idx + len(keyword)
-            if isinstance(text, list):
                 temp = line
                 temp['text'] = text
                 transformed.append(temp)
-            else:
-                broken = text.split('\n')
-                if len(broken) > 1:
-                    for seg in broken:
-                        temp = {'color': line['color'], 'text': seg}
-                        transformed.append(temp)
-                else:
-                    temp = line
-                    temp['text'] = text
-                    transformed.append(temp)
     return transformed
-
-def set_bonus_break(text):
-    lines = text.split('.(')
-    idx = 0
-    new_lines = []
-    while idx < len(lines):
-        line = lines[idx]
-        if idx == 0:
-            line = line + '.'
-        elif idx == len(lines) - 1:
-            line = '(' + line
-        else:
-            line = '(' + line + '.'
-        new_lines.append(line)
-        idx += 1
-    return new_lines
