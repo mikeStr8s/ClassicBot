@@ -50,7 +50,6 @@ def add_text(img, text, pos, color, indent=0):
     if isinstance(text, list):
         d.text((SMALL_PADDING, pos), text[0], font=fnt, fill=color)
         offset = d.textsize(text[1])
-        print('here')
         d.text((WIDTH - offset[0] - LARGE_PADDING, pos), text[1], font=fnt, fill=color)
     else:
         d.text((5 + indent, pos), text, font=fnt, fill=color)
