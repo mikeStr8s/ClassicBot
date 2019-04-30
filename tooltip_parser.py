@@ -134,7 +134,7 @@ def check_keyword_formatting(tt, keyword):
             broken = text.split('\n')
             if len(broken) > 1:
                 for seg in broken:
-                    temp = {'color': line['color'], 'text': seg}
+                    temp = {'color': line['color'], 'text': seg, 'args': None}
                     transformed.append(temp)
             else:
                 temp = line

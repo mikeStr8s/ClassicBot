@@ -4,8 +4,8 @@ import requests
 from discord import Colour
 
 from exceptions import ItemSearchError
-from tooltip_parser import parse_tooltip, clean_tooltip, check_keyword_formatting, dispatch_element
-from tooltip_image_builder import build_tooltip_image
+from tooltip_parser import parse_tooltip, clean_tooltip, check_keyword_formatting
+from tooltip_image_builder import build_tooltip
 
 OPEN_SEARCH = 'http://classic.wowhead.com/search?q={0}&opensearch'
 SEARCH = 'https://classic.wowhead.com/tooltip/item/{0}&json&power'
@@ -29,7 +29,7 @@ COLORS = {
 def search_for_item(query_string):
     item_id = get_item_id(query_string)
     item = get_item(item_id)
-    return build_tooltip_image(item['tooltip'])
+    return build_tooltip(item['tooltip'])
 
 
 
