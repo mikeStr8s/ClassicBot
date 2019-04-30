@@ -7,6 +7,8 @@ import uuid
 BORDER_COLOR = (119,119,119)
 BG_COLOR = (8,13,33)
 WIDTH = 320
+HEIGHT = lambda x: LARGE_PADDING + LINE_HEIGHT * x
+RIGHT_ALIGN = lambda x: WIDTH - LARGE_PADDING - x
 LINE_HEIGHT = 17
 LARGE_PADDING = 10
 SMALL_PADDING = 5
@@ -21,23 +23,18 @@ COLORS = {
     'q5': (255,128,0),  # Legendary
 }
 
+
 def build_tooltip_image(text_list):
-    num_lines = get_lines_of_text(text_list)
-    size = (WIDTH, LINE_HEIGHT * num_lines + LARGE_PADDING)
-    img = Image.new('RGB', size,color=BG_COLOR)
+    text_list = get_wrapped_text(text_list)
+    img = Image.new('RGB', (WIDTH, HEIGHT(len(text_list))),color=BG_COLOR)
     pos = SMALL_PADDING
     for item in text_list:
-        if isinstance(item['text'], str) and len(item['text']) > MAX_CHARS:
-            for text in textwrap.wrap(item['text'], MAX_CHARS):
-                add_text(img, text, pos, COLORS[item['color']])
-                pos += LINE_HEIGHT
-        else:
-            try:
-                if item['indent']:
-                    add_text(img, item['text'], pos, COLORS[item['color']], 15)
-            except KeyError:
-                add_text(img, item['text'], pos, COLORS[item['color']])
-            pos += LINE_HEIGHT
+        try:
+            if item['indent']:
+                add_text(img, item['text'], pos, COLORS[item['color']], 15)
+        except KeyError:
+            add_text(img, item['text'], pos, COLORS[item['color']])
+        pos += LINE_HEIGHT
     img = add_border(img)
     uid = str(uuid.uuid4()) + '.png'
     img.save(uid)
@@ -50,7 +47,7 @@ def add_text(img, text, pos, color, indent=0):
     if isinstance(text, list):
         d.text((SMALL_PADDING, pos), text[0], font=fnt, fill=color)
         offset = d.textsize(text[1])
-        d.text((WIDTH - offset[0] - LARGE_PADDING, pos), text[1], font=fnt, fill=color)
+        d.text((RIGHT_ALIGN(offset[0]), pos), text[1], font=fnt, fill=color)
     else:
         d.text((5 + indent, pos), text, font=fnt, fill=color)
 
@@ -59,14 +56,20 @@ def add_border(img):
     return ImageOps.expand(img, 1, BORDER_COLOR)
 
 
-def get_lines_of_text(text_list):
-    num_lines = 0
+def get_wrapped_text(text_list):
+    additional = []
     for item in text_list:
         if isinstance(item['text'], str):
             if len(item['text']) > MAX_CHARS:
-                num_lines += len(textwrap.wrap(item['text'], MAX_CHARS))
+                broken = textwrap.wrap(item['text'], MAX_CHARS)
+                for seg in broken:
+                    temp = dict()
+                    for key, value in item.items():
+                        temp[key] = value
+                    temp['text'] = seg
+                    additional.append(temp)
             else:
-                num_lines += 1
+                additional.append(item)
         else:
-            num_lines += 1
-    return num_lines
+            additional.append(item)
+    return additional
