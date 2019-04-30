@@ -1,6 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 import textwrap
+import uuid
 
 
 BORDER_COLOR = (119,119,119)
@@ -31,13 +32,19 @@ def build_tooltip_image(text_list):
                 add_text(img, text, pos, COLORS[item['color']])
                 pos += LINE_HEIGHT
         else:
-            add_text(img, item['text'], pos, COLORS[item['color']])
+            try:
+                if item['indent']:
+                    add_text(img, item['text'], pos, COLORS[item['color']], 15)
+            except KeyError:
+                add_text(img, item['text'], pos, COLORS[item['color']])
             pos += LINE_HEIGHT
     img = add_border(img)
-    img.save('tooltip.png')
+    uid = str(uuid.uuid4()) + '.png'
+    img.save(uid)
+    return uid
 
 
-def add_text(img, text, pos, color):
+def add_text(img, text, pos, color, indent=0):
     fnt = ImageFont.truetype(r'C:\Windows\Fonts\micross.ttf', 12)
     d = ImageDraw.Draw(img)
     if isinstance(text, list):
@@ -46,7 +53,7 @@ def add_text(img, text, pos, color):
         print('here')
         d.text((WIDTH - offset[0] - LARGE_PADDING, pos), text[1], font=fnt, fill=color)
     else:
-        d.text((5, pos), text, font=fnt, fill=color)
+        d.text((5 + indent, pos), text, font=fnt, fill=color)
 
 
 def add_border(img):

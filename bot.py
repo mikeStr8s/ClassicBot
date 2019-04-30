@@ -1,4 +1,5 @@
 import discord
+import os
 
 from ability_search import search_for_ability
 from exceptions import ItemSearchError, AbilitySearchError
@@ -19,11 +20,13 @@ async def on_message(message):
         search = message.content.replace('!item ', '')
         channel = message.channel
         try:
-            msg = search_for_item(search)
+            img = search_for_item(search)
         except ItemSearchError as e:
             await channel.send('{}'.format(e))
         else:
-            await channel.send(embed=msg)
+            await channel.send(file=discord.File(img))
+            os.remove(img)
+
 
     if message.content.startswith('!ability'):
         search = message.content.replace('!ability ', '')

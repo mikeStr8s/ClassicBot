@@ -4,7 +4,7 @@ import requests
 from discord import Embed, Colour
 
 from exceptions import AbilitySearchError
-from tooltip_parser import parse_tooltip, clean_tooltip
+from old_tooltip_parser import parse_tooltip, clean_tooltip
 
 ABILITY = 'https://classic.wowhead.com/abilities/name:{}'
 TOOL_TIP = 'https://classic.wowhead.com/tooltip/spell/{}&json&power'

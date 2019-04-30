@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup, NavigableString, Tag
 
 NAMED_LINK = '[{}]({})'
 BASE = 'https://classic.wowhead.com'
+QUALITY = ['q', 'q0', 'q2', 'q3', 'q4', 'q5']
 
 
 def clean_tooltip(tooltip):
@@ -22,115 +23,126 @@ def parse_tooltip(tooltip):
     return body
 
 
-def parse_content(items, internal=False):
-    c = 0
+def parse_content(content, modifier=None):
+    count = 0
     container = []
-    while c < len(items):
-        item = items[c]
+    while count < len(content):
+        item = content[count]
         if isinstance(item, NavigableString):
-            parsed_string, c = parse_navigable_string(items, c)
-            container.append(parsed_string)
-        else:
-            if item.name == 'span':
-                container.append(parse_span(item))
-                c += 1
-                continue
-            elif item.name == 'b':
-                c += 1
-                continue
-            elif item.name == 'a':
-                parsed_string, c = parse_navigable_string(items, c)
-                container.append(parsed_string)
-                c += 1
-                continue
-            elif item.name == 'div':
-                container.append(parse_div(item))
-                c += 1
-                continue
-            elif item.name == 'table':
-                container.append(parse_table(item))
-                c += 1
-                continue
+            if modifier:
+                container.append(parse_text(item, modifier))
             else:
-                c += 1
-    if internal:
-        return '\n'.join(container)
+                container.append(parse_text(item))
+            count +=1
+        else:
+            if item.name == 'b' or item.name == 'span':
+                if modifier:
+                    contents = parse_text(item, modifier)
+                else:
+                    contents = parse_text(item)
+                if isinstance(item, list):
+                    container.extend(contents)
+                else:
+                    container.append(contents)
+                count += 1
+            elif item.name == 'table':
+                for row in item.select('tr'):
+                    items = []
+                    for elem in row.contents:
+                        items.append(elem.text)
+                    container.append({'color': 'q1', 'text': items})
+                count += 1
+            elif item.name == 'div':
+                if 'indent' in item.attrs['class']:
+                    indent = parse_content(item.contents, 'q0')
+                    for parse in indent:
+                        parse['indent'] = True
+                    container.extend(indent)
+                count += 1
+            else:
+                count += 1
     return container
 
 
-def parse_navigable_string(items, count):
-    stop = False
-    pieces = []
-    while not stop and count < len(items):
-        item = items[count]
-        if isinstance(item, Tag):
-            if item.name == 'a':
-                pieces.append(parse_a(item))
-                count += 1
-            else:
-                stop = True
-        else:
-            pieces.append(item)
-            count += 1
-    return ' '.join(pieces), count
 
-
-def parse_a(tag):
-    return NAMED_LINK.format(tag.text, BASE + tag.attrs['href'])
-
-
-def parse_span(tag):
-    return parse_content(tag.contents, internal=True)
-
-
-def parse_div(tag):
-    if tag.attrs['class'] == ['q0', 'indent']:
-        return '\t* ' + '\n\t* '.join(parse_content(tag.contents))
-    elif tag.attrs['class'] == ['whtt-sellprice']:
-        return parse_sell_price(tag)
+def parse_text(element, color='q1'):
+    obj = {'color': color}
+    if isinstance(element, NavigableString):
+        obj['text'] = str(element)
+        return obj
     else:
-        return parse_content(tag.contents, internal=True)
-
-
-def parse_table(tag):
-    container = []
-    for row in tag.select('tr'):
-        pieces = []
-        for item in row.contents:
-            pieces.append(' '.join(parse_content(item.contents)))
-        container.append(' '.join(pieces))
-    return '\n'.join(container)
-
-
-def parse_sell_price(tag):
-    pieces = []
-    for item in tag.children:
-        if isinstance(item, Tag):
-            if item.attrs['class'] == ['moneygold']:
-                pieces.append(item.text + 'g')
-            elif item.attrs['class'] == ['moneysilver']:
-                pieces.append(item.text + 's')
-            else:
-                pieces.append(item.text + 'c')
-    return ' '.join(['Sell Price:'] + pieces)
+        obj['text'] = element.text
+        try:
+            attrs = element.attrs['class']
+            for q in QUALITY:
+                if q in attrs:
+                    obj['color'] = q
+                    break
+        except KeyError:
+            return obj
+        else:
+            return obj
 
 
 def check_keyword_formatting(tt, keyword):
     transformed = []
     for line in tt:
-        idx = 0
-        while idx < len(line):
-            idx = line.find(keyword, idx)
-            if idx == -1:
-                break
-            if idx > 0:
-                try:
-                    if '\n' not in line[idx - 2:idx]:
-                        line = line[:idx] + '\n' + line[idx:]
-                        idx = idx + len(keyword)
-                except IndexError:
-                    idx = idx + len(keyword)
+        text = line['text']
+        if keyword == '.(':
+            if isinstance(text, list):
+                transformed.append(line)
+                continue
+            broken = set_bonus_break(text)
+            if len(broken) > 1:
+                for seg in broken:
+                    temp = {'color': line['color'], 'text': seg}
+                    transformed.append(temp)
             else:
-                idx = idx + len(keyword)
-        transformed.append(line)
+                transformed.append(line)
+        else:
+            idx = 0
+            while idx < len(text):
+                if isinstance(text, list):
+                    break
+                idx = text.find(keyword, idx)
+                if idx == -1:
+                    break
+                if idx > 0:
+                    try:
+                        text = text[:idx] + '\n' + text[idx:]
+                        idx = idx + len(keyword)
+                    except IndexError:
+                        idx = idx + len(keyword)
+                else:
+                    idx = idx + len(keyword)
+            if isinstance(text, list):
+                temp = line
+                temp['text'] = text
+                transformed.append(temp)
+            else:
+                broken = text.split('\n')
+                if len(broken) > 1:
+                    for seg in broken:
+                        temp = {'color': line['color'], 'text': seg}
+                        transformed.append(temp)
+                else:
+                    temp = line
+                    temp['text'] = text
+                    transformed.append(temp)
     return transformed
+
+def set_bonus_break(text):
+    lines = text.split('.(')
+    idx = 0
+    new_lines = []
+    while idx < len(lines):
+        line = lines[idx]
+        if idx == 0:
+            line = line + '.'
+        elif idx == len(lines) - 1:
+            line = '(' + line
+        else:
+            line = '(' + line + '.'
+        new_lines.append(line)
+        idx += 1
+    return new_lines
