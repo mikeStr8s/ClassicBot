@@ -80,10 +80,12 @@ def parse_sell_price(element):
 def parse_text_element(element, color=QUALITY[2], args=None):
     try:
         attrs = element.attrs['class']
-        color = intersection(attrs, QUALITY)[0]
-        if len(attrs) > 1:
-            attrs.remove(attrs.index(color))
-            return build_tooltip_line_item(color=color, text=dispatch_element(element, True), args=attrs)
+        intersect = intersection(attrs, QUALITY)
+        if intersect:
+            color = intersect[0]
+            if 'indent' in attrs:
+                args = ['indent']
+            return build_tooltip_line_item(color=color, text=dispatch_element(element, True), args=args)
         else:
             return build_tooltip_line_item(color=color, text=dispatch_element(element, True), args=args)
     except KeyError:
@@ -108,7 +110,6 @@ def intersection(one, two):
 
 def build_tooltip_line_item(color, text, args=None):
     return {'color': color, 'text': text, 'args': args}
-
 
 
 def check_keyword_formatting(tt, keyword):

@@ -1,7 +1,9 @@
 from PIL import Image, ImageDraw, ImageFont, ImageOps
+from io import BytesIO
 
 import textwrap
 import uuid
+import requests
 
 
 BORDER_COLOR = (119,119,119)
@@ -27,20 +29,28 @@ COLORS = {
 }
 
 
-def build_tooltip(text_list):
+def build_tooltip(text_list, icon_url):
     text_list = get_wrapped_text(text_list)
     img = Image.new('RGB', (WIDTH, HEIGHT(len(text_list))), color=BG_COLOR)
     pos = SMALL_PADDING
     for line in text_list:
-        if line['args'] is not None:
+        if line['args'] or line['args'] is not None:
             dispatch_line_item(img, line, pos)
         else:
             add_text(img, line['text'], pos, COLORS[line['color']])
         pos += LINE_HEIGHT
     img = add_border(img)
+    img = add_icon(img, icon_url)
     uid = str(uuid.uuid4()) + '.png'
     img.save(uid)
     return uid
+
+
+def add_icon(img, url):
+    response = requests.get(url)
+    icon = Image.open(BytesIO(response.content)).resize((3*LINE_HEIGHT, 3*LINE_HEIGHT))
+    img.paste(icon, (320-(3*LINE_HEIGHT), 1))
+    return img
 
 
 def dispatch_line_item(img, line, pos):

@@ -15,7 +15,7 @@ ITEM = 1
 ATTRS = 7
 ICON = 2
 QUALITY = 3
-KEYWORDS = ['Requires', 'Durability', 'Unique', '.(']
+KEYWORDS = ['Requires', 'Durability', 'Unique', 'Binds']
 COLORS = {
     0: Colour(0x9d9d9d),
     1: Colour(0xffffff),
@@ -29,7 +29,7 @@ COLORS = {
 def search_for_item(query_string):
     item_id = get_item_id(query_string)
     item = get_item(item_id)
-    return build_tooltip(item['tooltip'])
+    return build_tooltip(item['tooltip'], IMAGE.format(item['icon']))
 
 
 
