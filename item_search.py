@@ -4,7 +4,7 @@ import requests
 from discord import Colour
 
 from exceptions import ItemSearchError
-from tooltip_parser import parse_tooltip, clean_tooltip, check_keyword_formatting
+from tooltip_parser import parse_tooltip, clean_tooltip, check_keyword_formatting, dispatch_element
 from tooltip_image_builder import build_tooltip_image
 
 OPEN_SEARCH = 'http://classic.wowhead.com/search?q={0}&opensearch'
