@@ -49,7 +49,7 @@ def dispatch_line_item(img, line, pos):
     elif 'split' in line['args']:
         add_text(img, line['text'], pos, COLORS[line['color']])
     elif 'money' in line['args']:
-        add_money_text(img, line['text'], pos)
+        add_money_text(img, line, pos)
 
 
 def add_text(img, text, pos, color, indent=0):
@@ -66,17 +66,17 @@ def add_text(img, text, pos, color, indent=0):
 def add_money_text(img, text, pos):
     fnt = ImageFont.truetype(r'C:\Windows\Fonts\micross.ttf', 12)
     d = ImageDraw.Draw(img)
-    delims = ['q1', 'g', 's', 'c']
+    delims = {'money':'q1', 'moneygold':'g', 'moneysilver':'s', 'moneycopper':'c'}
     prev_text = ''
     offset = (0,0)
-    for idx, delim in enumerate(delims):
-        temp = text[idx]
+    for idx, arg in enumerate(text['args']):
+        temp = text['text'][idx]
         d.text((SMALL_PADDING + offset[0], pos), temp, font=fnt, fill=COLORS['q1'])
         prev_text += temp
         offset = d.textsize(prev_text)
         if idx > 0:
-            d.text((SMALL_PADDING + offset[0], pos), delim, font=fnt, fill=COLORS[delim])
-            prev_text += delim + ' '
+            d.text((SMALL_PADDING + offset[0], pos), ' ' + delims[arg], font=fnt, fill=COLORS[delims[arg]])
+            prev_text += ' ' + delims[arg]
             offset = d.textsize(prev_text)
 
 

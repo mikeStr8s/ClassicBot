@@ -64,13 +64,17 @@ def parse_table(element):
 
 def parse_sell_price(element):
     container = []
+    args = ['money']
     for elem in element:
         try:
             container.append(elem.text)
+            args.append(elem.attrs['class'][0])
         except AttributeError:
             container.append(str(elem))
+        except KeyError:
+            continue
     container = list(filter(lambda a: a != ' ', container))
-    return build_tooltip_line_item(color=QUALITY[2], text=container, args=['money'])
+    return build_tooltip_line_item(color=QUALITY[2], text=container, args=args)
 
 
 def parse_text_element(element, color=QUALITY[2], args=None):
