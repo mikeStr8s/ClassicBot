@@ -3,12 +3,16 @@ import requests
 import re
 
 from constants import SEARCH_OBJECT_TYPE, OPEN_SEARCH, TOOLTIP
+from bs4 import BeautifulSoup
+
 
 class OpenSearchError(Exception):
     pass
 
+
 class SearchObjectError(Exception):
     pass
+
 
 class OpenSearch:
     def __init__(self, command, search_query):
@@ -20,7 +24,6 @@ class OpenSearch:
         self.search_query = search_query
         self.command = command
         self.search_results = self.search(SEARCH_OBJECT_TYPE[command])
-
 
     def search(self, type_id):
         """
@@ -48,7 +51,8 @@ class OpenSearch:
                         return self.build_search_object(result_name, self.command, result)
                     search_results.append(self.build_search_object(result_name, self.command, result))
         except IndexError:
-            raise OpenSearchError('{}, the {} you searched for returned no results.'.format(self.search_query, self.command))
+            raise OpenSearchError(
+                '{}, the {} you searched for returned no results.'.format(self.search_query, self.command))
         return search_results[0]
 
     @staticmethod
@@ -124,8 +128,16 @@ class SearchObject:
                 text = cleaned[stop:idx]
                 rebuild = rebuild + '<span>' + text + '</span>'
         cleaned = rebuild + cleaned[idx:]
+
+        body = ''
+        soup = BeautifulSoup(cleaned, 'html.parser')
+        for content in soup.children:
+            body += str(content.next.next)[4:-5]
+
+        cleaned = body
         return cleaned
 
     def parse_tooltip(self, raw_tooltip):
         tooltip = []
+
         return tooltip
