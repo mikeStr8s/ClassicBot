@@ -40,12 +40,15 @@ class OpenSearch:
         """
         response = json.loads(requests.get(OPEN_SEARCH.format(self.search_query)).content)
         search_results = []
-        for idx, result in enumerate(response[7]):
-            if result[0] == type_id:
-                result_name = re.sub('\s\([a-zA-z]+\)', '', response[1][idx])
-                if result_name.lower() == self.search_query.lower():
-                    return self.build_search_object(result_name, self.command, result)
-                search_results.append(self.build_search_object(result_name, self.command, result))
+        try:
+            for idx, result in enumerate(response[7]):
+                if result[0] == type_id:
+                    result_name = re.sub('\s\([a-zA-z]+\)', '', response[1][idx])
+                    if result_name.lower() == self.search_query.lower():
+                        return self.build_search_object(result_name, self.command, result)
+                    search_results.append(self.build_search_object(result_name, self.command, result))
+        except IndexError:
+            raise OpenSearchError('{}, the {} you searched for returned no results.'.format(self.search_query, self.command))
         return search_results[0]
 
     @staticmethod
@@ -121,3 +124,7 @@ class SearchObject:
                 rebuild = rebuild + '<span>' + text + '</span>'
         cleaned = rebuild + cleaned[idx:]
         return cleaned
+
+    @staticmethod
+    def parse_tooltip(tooltip):
+        pass
