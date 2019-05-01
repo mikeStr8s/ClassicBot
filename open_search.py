@@ -2,7 +2,7 @@ import json
 import requests
 import re
 
-from constants import SEARCH_OBJECT_TYPE, OPEN_SEARCH
+from constants import SEARCH_OBJECT_TYPE, OPEN_SEARCH, TOOLTIP
 
 class OpenSearchError(Exception):
     pass
@@ -44,23 +44,24 @@ class OpenSearch:
             if result[0] == type_id:
                 result_name = re.sub('\s\([a-zA-z]+\)', '', response[1][idx])
                 if result_name.lower() == self.search_query.lower():
-                    return self.build_search_object(result_name, result)
-                search_results.append(self.build_search_object(result_name, result))
+                    return self.build_search_object(result_name, self.command, result)
+                search_results.append(self.build_search_object(result_name, self.command, result))
         return search_results[0]
 
     @staticmethod
-    def build_search_object(name, result):
+    def build_search_object(name, command, result):
         """
         Attempts to build a search object with as much information as it can from the resulting search.
 
         Args:
             name (str): The name of the object
+            command (str): The command used to search for the object
             result (list): The attribute container that is returned by the search
 
         Returns:
             SearchObject: The search object that is populated with the resulting attributes
         """
-        args = [name, result[1]]
+        args = [name, command, result[1]]
         try:
             args.append(result[2])
             args.append(result[3])
@@ -71,9 +72,11 @@ class OpenSearch:
 
 
 class SearchObject:
-    def __init__(self, name, obj_id, icon_name=None, quality=None):
+    def __init__(self, name, obj_type, obj_id, icon_name=None, quality=None):
         if not isinstance(name, str):
             raise SearchObjectError('The object name type {}, not str as expected'.format(type(name)))
+        if not isinstance(obj_type, str):
+            raise SearchObjectError('The object type {}, not str as expected'.format(type(name)))
         if not isinstance(obj_id, int):
             raise SearchObjectError('The object object id was type {}, not int as expected'.format(type(obj_id)))
 
@@ -85,6 +88,37 @@ class SearchObject:
                 raise SearchObjectError('The argument provided was not of type str or int: {}'.format(type(quality)))
 
         self.result_name = name
+        self.object_type = obj_type
         self.object_id = obj_id
         self.icon_name = icon_name
         self.quality = quality
+
+    def get_tooltip_data(self):
+        response = json.loads(requests.get(TOOLTIP.format(self.object_type, self.object_id)).content)
+        tooltip = self.clean_tooltip_data(response['tooltip'])
+        return tooltip
+
+    @staticmethod
+    def clean_tooltip_data(tooltip):
+        cleaned = tooltip.replace('\n', '')
+        cleaned = cleaned.replace('    ', '')
+        cleaned = re.sub('((<!--)([a-z0-9:]+)(-->))|(<a ([a-z0-9\/=\-\" ])+>)|(<\/a>)', '', cleaned)
+        # TODO: Do the <br> tag search and replace
+
+        rebuild = ''
+        pattern = re.compile('<br(\s\/)*>')
+        idx = 0
+        for match in pattern.finditer(cleaned):
+            indices = match.span()
+            start = indices[0]
+            stop = indices[1]
+            if cleaned[stop:stop + 1] == '<':
+                rebuild = rebuild + cleaned[idx:start]
+                idx = stop
+            else:
+                rebuild = rebuild + cleaned[idx:start]
+                idx = cleaned.find('<', stop)
+                text = cleaned[stop:idx]
+                rebuild = rebuild + '<span>' + text + '</span>'
+        cleaned = rebuild + cleaned[idx:]
+        return cleaned
