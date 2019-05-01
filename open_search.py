@@ -2,7 +2,7 @@ import json
 import requests
 import re
 
-from constants import SEARCH_OBJECT_TYPE
+from constants import SEARCH_OBJECT_TYPE, OPEN_SEARCH
 
 class OpenSearchError(Exception):
     pass
@@ -11,8 +11,6 @@ class SearchObjectError(Exception):
     pass
 
 class OpenSearch:
-    url = 'http://classic.wowhead.com/search?q={}&opensearch'
-
     def __init__(self, command, search_query):
         if not isinstance(command, str):
             raise OpenSearchError('The command: {} is not a string.'.format(command))
@@ -40,7 +38,7 @@ class OpenSearch:
         Returns:
             SearchObject: The resulting search object being either the exact match or first response
         """
-        response = json.loads(requests.get(self.url.format(self.search_query)).content)
+        response = json.loads(requests.get(OPEN_SEARCH.format(self.search_query)).content)
         search_results = []
         for idx, result in enumerate(response[7]):
             if result[0] == type_id:
