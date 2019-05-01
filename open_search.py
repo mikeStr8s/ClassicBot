@@ -103,7 +103,6 @@ class SearchObject:
         cleaned = tooltip.replace('\n', '')
         cleaned = cleaned.replace('    ', '')
         cleaned = re.sub('((<!--)([a-z0-9:]+)(-->))|(<a ([a-z0-9\/=\-\" ])+>)|(<\/a>)', '', cleaned)
-        # TODO: Do the <br> tag search and replace
 
         rebuild = ''
         pattern = re.compile('<br(\s\/)*>')
