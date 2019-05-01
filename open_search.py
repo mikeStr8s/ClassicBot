@@ -95,11 +95,12 @@ class SearchObject:
         self.object_id = obj_id
         self.icon_name = icon_name
         self.quality = quality
+        self.tooltip = None
 
     def get_tooltip_data(self):
         response = json.loads(requests.get(TOOLTIP.format(self.object_type, self.object_id)).content)
-        tooltip = self.clean_tooltip_data(response['tooltip'])
-        return tooltip
+        raw_tooltip = self.clean_tooltip_data(response['tooltip'])
+        self.tooltip = self.parse_tooltip(raw_tooltip)
 
     @staticmethod
     def clean_tooltip_data(tooltip):
@@ -125,6 +126,6 @@ class SearchObject:
         cleaned = rebuild + cleaned[idx:]
         return cleaned
 
-    @staticmethod
-    def parse_tooltip(tooltip):
-        pass
+    def parse_tooltip(self, raw_tooltip):
+        tooltip = []
+        return tooltip
