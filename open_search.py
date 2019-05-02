@@ -1,9 +1,10 @@
 import json
-import requests
 import re
 
-from constants import SEARCH_OBJECT_TYPE, OPEN_SEARCH, TOOLTIP, Q_COLORS, TOOLTIP_ARGS
+import requests
 from bs4 import BeautifulSoup, NavigableString
+
+from constants import SEARCH_OBJECT_TYPE, OPEN_SEARCH, TOOLTIP, Q_COLORS, TOOLTIP_ARGS
 
 
 class OpenSearchError(Exception):
@@ -53,7 +54,12 @@ class OpenSearch:
         except IndexError:
             raise OpenSearchError(
                 '{}, the {} you searched for returned no results.'.format(self.search_query, self.command))
-        return search_results[0]
+        try:
+            return search_results[0]
+        except:
+            raise OpenSearchError(
+                'The {0} search had no results for your search of {1}. Please try refining your search term OR writing the full name of the {0}'.format(
+                    self.command, self.search_query))
 
     @staticmethod
     def build_search_object(name, command, result):
