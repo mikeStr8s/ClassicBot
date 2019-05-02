@@ -9,3 +9,7 @@ SEARCH_OBJECT_TYPE = {
     'spell': 6,
     'npc': 1
 }
+
+Q_COLORS = ['q', 'q0', 'q1', 'q2', 'q3', 'q4', 'q5']
+
+TOOLTIP_ARGS = ['indent', 'split', 'whtt-sellprice']

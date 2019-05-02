@@ -2,8 +2,8 @@ import json
 import requests
 import re
 
-from constants import SEARCH_OBJECT_TYPE, OPEN_SEARCH, TOOLTIP
-from bs4 import BeautifulSoup
+from constants import SEARCH_OBJECT_TYPE, OPEN_SEARCH, TOOLTIP, Q_COLORS, TOOLTIP_ARGS
+from bs4 import BeautifulSoup, NavigableString
 
 
 class OpenSearchError(Exception):
@@ -134,10 +134,99 @@ class SearchObject:
         for content in soup.children:
             body += str(content.next.next)[4:-5]
 
-        cleaned = body
-        return cleaned
+        soup = BeautifulSoup(body, 'html.parser')
+        for table in soup.find_all('table'):
+            table.unwrap()
+
+        for tr in soup.find_all('tr'):
+            split_div = soup.new_tag('div')
+            split_div.attrs['class'] = ['split']
+            split_div.contents = tr.contents
+            tr.replace_with(split_div)
+        return soup.contents
 
     def parse_tooltip(self, raw_tooltip):
         tooltip = []
-
+        for line_item in raw_tooltip:
+            if isinstance(line_item, NavigableString):
+                tooltip.append(self.parse_nav_string(line_item))
+            else:
+                if self.no_nav_strings(line_item.contents):
+                    if line_item.name == 'div' or line_item.name == 'span':
+                        tooltip.extend(self.parse_elements(line_item))
+                else:
+                    tooltip.extend(self.parse_elements(line_item))
         return tooltip
+
+    def parse_nav_string(self, element):
+        return self.build_tooltip_line_item(Q_COLORS[2], element)
+
+    def parse_elements(self, element):
+        try:
+            color = self.intersection(element.attrs['class'], Q_COLORS)[0]
+        except (KeyError, IndexError):
+            color = Q_COLORS[2]
+        try:
+            args = self.determine_style(self.intersection(element.attrs['class'], TOOLTIP_ARGS)[0], element)
+        except (KeyError, IndexError):
+            args = None
+
+        if args is not None:
+            if args['style'] == 'indent':
+                pieces = []
+                for elem in element.contents:
+                    if isinstance(elem, NavigableString):
+                        pieces.append(self.build_tooltip_line_item(color, str(elem), args))
+                    else:
+                        pieces.append(self.build_tooltip_line_item(color, elem.text, args))
+                return pieces
+            elif args['style'] == 'split' or args['style'] == 'whtt-sellprice':
+                return [self.build_tooltip_line_item(color, element.text, args)]
+        else:
+            pieces = []
+            for elem in element.contents:
+                if isinstance(elem, NavigableString):
+                    pieces.append(self.build_tooltip_line_item(color, str(elem)))
+                else:
+                    pieces.append(self.build_tooltip_line_item(color, elem.text))
+            return pieces
+
+    @staticmethod
+    def build_tooltip_line_item(color, text, args=None):
+        return {'color': color, 'text': text, 'args': args}
+
+    @staticmethod
+    def no_nav_strings(elements):
+        for element in elements:
+            if isinstance(element, NavigableString):
+                return False
+        return True
+
+    @staticmethod
+    def intersection(one, two):
+        temp = set(two)
+        return [x for x in one if x in temp]
+
+    @staticmethod
+    def determine_style(style, element):
+        style_args = {'style': style, 'value': []}
+        if style == 'indent':
+            style_args['value'].append(15)
+        elif style == 'split':
+            idx = len(element.contents[0].text)
+            style_args['value'].append(idx)
+        elif style == 'whtt-sellprice':
+            for item in element.contents:
+                if isinstance(item, NavigableString):
+                    style_args['value'].append({'pre': len(item)})
+                else:
+                    currency = item.attrs['class'][0]
+                    if currency == 'moneygold':
+                        style_args['value'].append({'gold': len(item.text)})
+                    elif currency == 'moneysilver':
+                        style_args['value'].append({'silver': len(item.text)})
+                    elif currency == 'moneycopper':
+                        style_args['value'].append({'copper': len(item.text)})
+        else:
+            return None
+        return style_args
