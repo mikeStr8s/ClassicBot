@@ -1,9 +1,8 @@
 import discord
+import os
 
-from ability_search import search_for_ability
-from exceptions import ItemSearchError, AbilitySearchError
-from item_search import search_for_item
 from user_vals import TOKEN
+from open_search import OpenSearch, OpenSearchError, SearchObjectError
 
 TOKEN = TOKEN
 
@@ -15,26 +14,22 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith('!item'):
-        search = message.content.replace('!item ', '')
+    if message.content.startswith('!classic'):
+        search = message.content.replace('!classic ', '')
         channel = message.channel
-        try:
-            msg = search_for_item(search)
-        except ItemSearchError as e:
-            await channel.send('{}'.format(e))
+        if search[:4] == 'item':
+            try:
+                oser = OpenSearch('item', search.replace('item ', ''))
+                oser.search_results.get_tooltip_data()
+                image = oser.search_results.image
+                await channel.send(file=discord.File(image))
+                os.remove(image)
+            except (OpenSearchError, SearchObjectError) as e:
+                await channel.send(e)
         else:
-            await channel.send(embed=msg)
-
-    if message.content.startswith('!ability'):
-        search = message.content.replace('!ability ', '')
-        channel = message.channel
-        try:
-            msgs = search_for_ability(search)
-        except AbilitySearchError as e:
-            await channel.send(e)
-        else:
-            for msg in msgs:
-                await channel.send(embed=msg)
+            await channel.send(
+                'The command you have entered was not recognized, make sure formatting looks like this: '
+                '`!classic item training sword`')
 
 
 @client.event
