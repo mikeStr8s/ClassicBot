@@ -14,7 +14,7 @@ ClassicBot functionality is pretty straight forward, you input a command and get
 ## Usage
 `!classic` **item** *sulfuras, hand of ragnaros*
 
-![Sulfuras, Hand of Ragnaros](https://github.com/mikeStr8s/ClassicBot/blob/master/docs/sulf.PNG?raw=true)
+![Sulfuras, Hand of Ragnaros](https://raw.githubusercontent.com/mikeStr8s/ClassicBot/master/docs/sulf.png)
 
 
 ## Feature Requests
