@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup, NavigableString
 
 from constants import SEARCH_OBJECT_TYPE, OPEN_SEARCH, TOOLTIP, Q_COLORS, TOOLTIP_ARGS
+from tooltip import build_tooltip
 
 
 class OpenSearchError(Exception):
@@ -106,11 +107,19 @@ class SearchObject:
         self.icon_name = icon_name
         self.quality = quality
         self.tooltip = None
+        self.image = None
 
     def get_tooltip_data(self):
         response = json.loads(requests.get(TOOLTIP.format(self.object_type, self.object_id)).content)
-        raw_tooltip = self.clean_tooltip_data(response['tooltip'])
+        try:
+            raw_tooltip = self.clean_tooltip_data(response['tooltip'])
+        except AttributeError:
+            raise SearchObjectError(
+                '{0} {1} does not comply with parser structure. Please refine search if this was not the {1} that was intended.\n'
+                'If you believe this to be an error, please submit an issue here: https://github.com/mikeStr8s/ClassicBot/issues'.format(
+                    self.object_type, self.result_name))
         self.tooltip = self.parse_tooltip(raw_tooltip)
+        self.image = build_tooltip(self.tooltip, self.icon_name)
 
     @staticmethod
     def clean_tooltip_data(tooltip):
