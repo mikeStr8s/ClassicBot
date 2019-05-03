@@ -89,3 +89,6 @@ class TestOpenSearch(unittest.TestCase):
                 assert False, '{}'.format(e)
             else:
                 assert True
+
+if __name__ == '__main__':
+    unittest.main()
