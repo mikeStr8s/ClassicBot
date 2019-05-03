@@ -90,5 +90,19 @@ class TestOpenSearch(unittest.TestCase):
             else:
                 assert True
 
+    def test_get_tooltip_data_fails(self):
+        cases = [
+            ['item', 'sulfuras']
+        ]
+
+        for case in cases:
+            search = OpenSearch(*case)
+            try:
+                search.search_results.get_tooltip_data()
+            except (OpenSearchError, SearchObjectError, IndexError, KeyError) as e:
+                assert False, '{}'.format(e)
+            else:
+                assert True
+
 if __name__ == '__main__':
     unittest.main()
