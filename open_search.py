@@ -119,6 +119,9 @@ class SearchObject:
                 'If you believe this to be an error, please submit an issue here: https://github.com/mikeStr8s/ClassicBot/issues'.format(
                     self.object_type, self.result_name))
         self.tooltip = self.parse_tooltip(raw_tooltip)
+        self.build_image()
+
+    def build_image(self):
         self.image = build_tooltip(self.tooltip, self.icon_name)
 
     @staticmethod

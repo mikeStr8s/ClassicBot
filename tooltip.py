@@ -22,7 +22,7 @@ def build_tooltip(lines, icon_name):
 
 
 def add_tooltip_text(container, lines, max_length):
-    fnt = ImageFont.truetype(r'C:\Windows\Fonts\micross.ttf', 12)
+    fnt = ImageFont.truetype('micross.ttf', 12)
     for idx, line in enumerate(lines):
         drawer = ImageDraw.Draw(container)
         if line['args'] is not None:
@@ -113,6 +113,6 @@ def wrap_text(lines):
             if len(text) > len(max_line):
                 max_line = text
     drawer = ImageDraw.Draw(Image.new('RGB', (100, 100), color=BG_COLOR))
-    max_line_length = drawer.textsize(max_line, ImageFont.truetype(r'C:\Windows\Fonts\micross.ttf', 12))[0]
+    max_line_length = drawer.textsize(max_line, ImageFont.truetype('micross.ttf', 12))[0]
     if max_line_length < 85: max_line_length = 85
     return wrapped_lines, max_line_length
