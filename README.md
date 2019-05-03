@@ -3,23 +3,18 @@ ClassicBot was designed to enhance Classic World of Warcraft communities by allo
 
 ![build](https://travis-ci.org/mikeStr8s/ClassicBot.svg?branch=master) 
 [![codecov](https://codecov.io/gh/mikeStr8s/ClassicBot/branch/master/graph/badge.svg)](https://codecov.io/gh/mikeStr8s/ClassicBot)
-![version](https://img.shields.io/badge/version-v0.2.5-blue.svg)
+![version](https://img.shields.io/badge/version-v0.3.0-blue.svg)
 
 ## Overview
 ClassicBot functionality is pretty straight forward, you input a command and get responses back depending on the input.
 
-**Current Commands:**
-- `!item` *item name* - Requests the tooltip of the supplied item name
-- `!ability` *ability name* - Requests the tooltip of the max rank version, if ranked, of the supplied ability name
+## Command
+`!classic` is the command that will go in front of every search term. This is to make it as easy as possible for the user to know how to begin their query.
 
 ## Usage
-`!item` *sulfuras, hand of ragnaros*
+`!classic` **item** *sulfuras, hand of ragnaros*
 
 ![Sulfuras, Hand of Ragnaros](https://github.com/mikeStr8s/ClassicBot/blob/master/docs/sulf.PNG?raw=true)
-
-`!ability` *frostbolt*
-
-![Frostbolt](https://github.com/mikeStr8s/ClassicBot/blob/master/docs/fros.PNG?raw=true)
 
 
 ## Feature Requests
@@ -29,11 +24,9 @@ Please direct all feature requests to the issues section of this repository, or 
 There are a lot of features that I would still like to have be a part of this bot. Many of the pieces and parts of this bot rely on outside sources and so I am restricted to what these sources provide.
 
 **Future features include, but are not limited to:**
-- Allowing specific ranks of abilities to be queried by users.
+- Allowing abilities and their ranks to be queried by users.
+- Allowing variations of items with the same name (Atiesh) to be given parameters to specify which one is desired.
 - Allowing talents, and their ranks to be queried by users.
-- Replace command specific queries with a dynamic "build your own" style.
-  - `!classic` **weapon** *nightfall*
-  - `!classic` **spell** *rain of fire* rank 1
 
 ## Contribution
 Contribution information will be added once an official v1.0.0 of ClassicBot is released.
