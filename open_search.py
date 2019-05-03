@@ -128,7 +128,7 @@ class SearchObject:
     def clean_tooltip_data(tooltip):
         cleaned = tooltip.replace('\n', '')
         cleaned = cleaned.replace('    ', '')
-        cleaned = re.sub('((<!--)([a-z0-9:]+)(-->))|(<a ([a-z0-9\/=\-\" ])+>)|(<\/a>)', '', cleaned)
+        cleaned = re.sub('((<!--)([a-z0-9:]+)(-->))|(<a ([a-z0-9\/=\-\" \.])+>)|(<\/a>)', '', cleaned)
 
         rebuild = ''
         pattern = re.compile('<br(\s\/)*>')
