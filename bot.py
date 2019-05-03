@@ -1,8 +1,9 @@
-import discord
 import os
 
-from user_vals import TOKEN
+import discord
+
 from open_search import OpenSearch, OpenSearchError, SearchObjectError
+from user_vals import TOKEN
 
 TOKEN = TOKEN
 

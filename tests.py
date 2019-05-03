@@ -7,7 +7,7 @@ class TestOpenSearch(unittest.TestCase):
     def test_open_search_construction_fails(self):
         cases = [
             [[], 'nightfall'],  # Command not a string
-            ['item', []],       # Query not a string
+            ['item', []],  # Query not a string
         ]
         for case in cases:
             try:
@@ -56,7 +56,6 @@ class TestOpenSearch(unittest.TestCase):
             else:
                 assert False, '{} was not of type SearchObject'.format(result)
 
-
     def test_search_object_construction_fails(self):
         cases = [
             {'args': [123, 'type', 1], 'kwargs': {'icon_name': 'icon_5', 'quality': 'rank 1'}},
@@ -103,6 +102,7 @@ class TestOpenSearch(unittest.TestCase):
                 assert False, '{}'.format(e)
             else:
                 assert True
+
 
 if __name__ == '__main__':
     unittest.main()
