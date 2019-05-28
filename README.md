@@ -5,6 +5,7 @@ ClassicBot was designed to enhance Classic World of Warcraft communities by allo
 [![codecov](https://codecov.io/gh/mikeStr8s/ClassicBot/branch/master/graph/badge.svg)](https://codecov.io/gh/mikeStr8s/ClassicBot)
 ![version](https://img.shields.io/badge/version-v0.3.0-blue.svg)
 [![Discord Bots](https://discordbots.org/api/widget/status/569926511298084885.svg)](https://discordbots.org/bot/569926511298084885)
+![Discord Banner 2](https://discordapp.com/api/guilds/582952027777138688/widget.png?style=shield)
 
 ## Overview
 ClassicBot functionality is pretty straight forward, you input a command and get responses back depending on the input.
