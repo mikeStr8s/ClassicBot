@@ -1,8 +1,8 @@
 import textwrap
-import requests
 import uuid
-
 from io import BytesIO
+
+import requests
 from PIL import Image, ImageDraw, ImageFont
 
 from constants import MAX_CHARS, ICON, LINE_HEIGHT, SMALL_PADDING, HEIGHT, DISCORD_BG, BG_COLOR, COLORS, INDENT, MONEY

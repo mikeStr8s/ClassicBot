@@ -1,8 +1,9 @@
-import discord
 import os
 
-from user_vals import TOKEN
+import discord
+
 from open_search import OpenSearch, OpenSearchError, SearchObjectError
+from user_vals import TOKEN
 
 TOKEN = TOKEN
 
@@ -20,6 +21,15 @@ async def on_message(message):
         if search[:4] == 'item':
             try:
                 oser = OpenSearch('item', search.replace('item ', ''))
+                oser.search_results.get_tooltip_data()
+                image = oser.search_results.image
+                await channel.send(file=discord.File(image))
+                os.remove(image)
+            except (OpenSearchError, SearchObjectError) as e:
+                await channel.send(e)
+        elif search[:5] == 'spell':
+            try:
+                oser = OpenSearch('spell', search.replace('spell ', ''))
                 oser.search_results.get_tooltip_data()
                 image = oser.search_results.image
                 await channel.send(file=discord.File(image))
