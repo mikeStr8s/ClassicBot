@@ -27,6 +27,15 @@ async def on_message(message):
                 os.remove(image)
             except (OpenSearchError, SearchObjectError) as e:
                 await channel.send(e)
+        elif search[:5] == 'spell':
+            try:
+                oser = OpenSearch('spell', search.replace('spell ', ''))
+                oser.search_results.get_tooltip_data()
+                image = oser.search_results.image
+                await channel.send(file=discord.File(image))
+                os.remove(image)
+            except (OpenSearchError, SearchObjectError) as e:
+                await channel.send(e)
         else:
             await channel.send(
                 'The command you have entered was not recognized, make sure formatting looks like this: '

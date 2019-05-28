@@ -143,16 +143,20 @@ class SearchObject:
             else:
                 rebuild = rebuild + cleaned[idx:start]
                 idx = cleaned.find('<', stop)
+                if idx == -1:
+                    idx = len(cleaned)
                 text = cleaned[stop:idx]
                 rebuild = rebuild + '<span>' + text + '</span>'
         cleaned = rebuild + cleaned[idx:]
 
-        body = ''
-        soup = BeautifulSoup(cleaned, 'html.parser')
-        for content in soup.children:
-            body += str(content.next.next)[4:-5]
+        if 'table' in cleaned[:6]:
+            body = ''
+            soup = BeautifulSoup(cleaned, 'html.parser')
+            for content in soup.children:
+                body += str(content.next.next)[4:-5]
+            cleaned = body
 
-        soup = BeautifulSoup(body, 'html.parser')
+        soup = BeautifulSoup(cleaned, 'html.parser')
         for table in soup.find_all('table'):
             table.unwrap()
 
