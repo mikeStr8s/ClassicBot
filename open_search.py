@@ -29,7 +29,7 @@ class OpenSearch:
     
     @staticmethod
     def get_args(query):
-        args = re.findall(r'-[a-z=]+', query)
+        args = re.findall(r'-[a-z]+=[a-z]+', query)
         kwargs = {'locale': ''}
         for arg in args:
             kwargs[arg.split('=')[0][1:]] = arg.split('=')[1]
@@ -121,8 +121,11 @@ class SearchObject:
         self.tooltip = None
         self.image = None
 
-    def get_tooltip_data(self):
-        response = json.loads(requests.get(TOOLTIP.format(self.object_type, self.object_id)).content)
+    def get_tooltip_data(self, locale):
+        if not locale:
+            response = json.loads(requests.get(TOOLTIP.format('', self.object_type, self.object_id)).content)
+        else:
+            response = json.loads(requests.get(TOOLTIP.format(locale+'.', self.object_type, self.object_id)).content)
         try:
             raw_tooltip = self.clean_tooltip_data(response['tooltip'])
         except AttributeError:
