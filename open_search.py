@@ -23,9 +23,18 @@ class OpenSearch:
         if not isinstance(search_query, str):
             raise OpenSearchError('The query: {} is not a string.'.format(search_query))
 
-        self.search_query = search_query
         self.command = command
+        self.kwargs, self.search_query = self.get_args(search_query)
         self.search_results = self.search(SEARCH_OBJECT_TYPE[command])
+    
+    @staticmethod
+    def get_args(query):
+        args = re.findall(r'-[a-z=]+', query)
+        kwargs = {'locale': ''}
+        for arg in args:
+            kwargs[arg.split('=')[0][1:]] = arg.split('=')[1]
+            query = query.replace(arg, '').strip()
+        return kwargs, query
 
     def search(self, type_id):
         """
@@ -43,7 +52,10 @@ class OpenSearch:
         Returns:
             SearchObject: The resulting search object being either the exact match or first response
         """
-        response = json.loads(requests.get(OPEN_SEARCH.format(self.search_query)).content)
+        if self.kwargs['locale']:
+            response = json.loads(requests.get(OPEN_SEARCH.format(self.kwargs['locale']+'.', self.search_query)).content)
+        else:
+            response = json.loads(requests.get(OPEN_SEARCH.format('', self.search_query)).content)
         search_results = []
         try:
             for idx, result in enumerate(response[7]):

@@ -1,6 +1,6 @@
 ITEM_URL = 'https://classic.wowhead.com/item={0}'
 
-OPEN_SEARCH = 'http://classic.wowhead.com/search?q={}&opensearch'
+OPEN_SEARCH = 'http://{}classic.wowhead.com/search?q={}&opensearch'
 TOOLTIP = 'https://classic.wowhead.com/tooltip/{}/{}&json&power'
 ICON = 'https://wow.zamimg.com/images/wow/icons/large/{0}.jpg'
 MONEY = 'https://wow.zamimg.com/images/icons/money-{}.gif'
