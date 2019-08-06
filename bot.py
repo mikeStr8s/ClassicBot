@@ -18,7 +18,7 @@ async def on_message(message):
     async def search(t, q, c):
         try:
             oser = OpenSearch(t, q)
-            oser.search_results.get_tooltip_data()
+            oser.search_results.get_tooltip_data(oser.kwargs['locale'])
             image = oser.search_results.image
             await c.send(file=discord.File(image))
             os.remove(image)
