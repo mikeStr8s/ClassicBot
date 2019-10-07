@@ -1,54 +1,31 @@
 import os
+from discord.ext import commands
 
-import discord
-
-from open_search import OpenSearch, OpenSearchError, SearchObjectError
 from user_vals import TOKEN
 
-TOKEN = TOKEN
 
-client = discord.Client()
-
-
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-
-    async def search(t, q, c):
-        try:
-            oser = OpenSearch(t, q)
-            oser.search_results.get_tooltip_data(oser.kwargs['locale'])
-            image = oser.search_results.image
-            await c.send(file=discord.File(image))
-            os.remove(image)
-        except (OpenSearchError, SearchObjectError) as e:
-            await c.send(e)
-
-    channel = message.channel
-    if message.content.startswith('!item'):
-        query = message.content.replace('!item ', '')
-        await search('item', query, channel)
-
-    elif message.content.startswith('!ability'):
-        query = message.content.replace('!ability ', '')
-        await search('spell', query, channel)
-
-    elif message.content.startswith('!spell'):
-        query = message.content.replace('!spell ', '')
-        await search('spell', query, channel)
-    else:
-        await channel.send(
-            'The command you have entered was not recognized, make sure formatting looks like this: '
-            '`!classic item training sword`')
+INITIAL_EXTENSIONS = [
+    'cogs.search',
+]
 
 
-@client.event
-async def on_ready():
-    print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
-    print('------')
+class ClassicBot(commands.Bot):
+    def __init__(self):
+        super().__init__('!')  # Initialize bot with "!" as the command prefix
+        self.token = TOKEN  # Set bot token
+
+        # Load all extensions for bot
+        for extension in INITIAL_EXTENSIONS:
+            try:
+                self.load_extension(extension)
+                print('{} loaded'.format(extension))
+            except Exception as e:
+                print('Failed to load extension {}\n{}: {}'.format(extension, type(e).__name__, e))
+
+    def run(self):
+        super().run(self.token, reconnect=True)
 
 
-client.run(TOKEN)
+if __name__ == '__main__':
+    classicBot = ClassicBot()
+    classicBot.run()
