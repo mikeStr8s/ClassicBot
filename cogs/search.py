@@ -3,6 +3,7 @@ from discord import Embed, File
 import sqlite3
 import requests
 from shutil import copyfileobj
+import json
 
 
 class Search(commands.Cog):
@@ -79,6 +80,28 @@ class Search(commands.Cog):
                 response.raw.decode_content = True
                 copyfileobj(response.raw, img)
 
+    @staticmethod
+    def wowhead_search(query, record_type):
+        """
+        Perform a wowhead suggestion search on the query with the specified record_type to further narrow the options
+        :param query: The user input query from the discord client
+        :type query: str
+        :param record_type: The type of record being searched for
+        :type record_type: str
+        :return: Dictionary containing any necessary params gathered from the web
+        :rtype: dict
+        """
+        suggestion_url = 'https://classic.wowhead.com/search/suggestions-template?q={}'.format(query)
+        response = requests.get(suggestion_url)
+        results = json.loads(response.content)['results']
+        results = [x for x in results if x['typeName'] == record_type]
+        record = results[0]
+        for result in results:
+            if result['name'].lower() == query.lower():
+                record = result
+                break
+        return {'name': record['name'], 'id': int(record['id'])}
+
     def build_item_message(self, db, query):
         # Check to see if the item exists by name already
         res = self.query_database(db, "select id, name, img from item where name = '{}'".format(query))
@@ -86,25 +109,30 @@ class Search(commands.Cog):
             # If there is an exact match return the discord embed and file object
             return self.create_embed(res)
 
-        # TODO: implement opensearch for items using wowhead and return an item id
-        item_id = int(query)  # Temp while no open search available
+        try:
+            wowhead = self.wowhead_search(query, 'Item')
+        except IndexError:
+            image, embed = self.create_embed(('', 'UhOh', 'item-images/UhOh.png'))
+            embed.title = 'Something went wrong!!'
+            embed.description = 'The item you were searching for broke the system! ' \
+                                'Please report [here](https://github.com/mikeStr8s/ClassicBot/issues/new)'
+            return image, embed
 
         # Check to see if the item exists by id already
-        res = self.query_database(db, 'select id, name, img, url from item where id = {}'.format(item_id))
+        res = self.query_database(db, 'select id, name, img, url from item where id = {}'.format(wowhead['id']))
         if res is not None:
             # If the item exists already in the database return the discord embed and file object
             return self.create_embed(res)
 
         # Get external image for local library
-        img_response = requests.get('https://items.classicmaps.xyz/{}.png'.format(item_id), stream=True)
-        self.save_image(img_response, 'item', item_id)
+        img_response = requests.get('https://items.classicmaps.xyz/{}.png'.format(wowhead['id']), stream=True)
+        self.save_image(img_response, 'item', wowhead['id'])
 
         # Create a new database record for item searched
-        item_url = 'https://classic.wowhead.com/item={}'.format(item_id)
-        item_img = 'item-images/{}.png'.format(item_id)
-        item_name = 'fixme - not implemented'  # TODO: Replace with name from outside search
-        self.create_new_record(db, 'item', [item_id, item_name, item_img, item_url])
-        query = 'select id, name, img, url from item where id = {}'.format(item_id)
+        item_url = 'https://classic.wowhead.com/item={}'.format(wowhead['id'])
+        item_img = 'item-images/{}.png'.format(wowhead['id'])
+        self.create_new_record(db, 'item', [wowhead['id'], wowhead['name'], item_img, item_url])
+        query = 'select id, name, img, url from item where id = {}'.format(wowhead['id'])
         return self.create_embed(self.query_database(db, query))
 
     @commands.command()
