@@ -1,6 +1,12 @@
-venv
+env
+.vscode
 .idea
 .DS_Store
 user_vals.py
 __pycache__
 discord.log
+item-images
+item.db
+spell-images
+spell.db
+venv

@@ -1,22 +1,17 @@
 # ClassicBot
-ClassicBot was designed to enhance Classic World of Warcraft communities by allowing them to link directly to in game tooltips in their discord servers. Now when you get the final piece to craft "Sulfuras, Hand of Ragnaros", but no one is online to see your achievement you can link the item straight into discord so that as many eyes as possible can see the item in all its wonderful glory.
 
-![build](https://travis-ci.org/mikeStr8s/ClassicBot.svg?branch=master) 
-[![codecov](https://codecov.io/gh/mikeStr8s/ClassicBot/branch/master/graph/badge.svg)](https://codecov.io/gh/mikeStr8s/ClassicBot)
-![version](https://img.shields.io/badge/version-v0.3.0-blue.svg)
 [![Discord Bots](https://discordbots.org/api/widget/status/569926511298084885.svg)](https://discordbots.org/bot/569926511298084885)
 ![Discord Banner 2](https://discordapp.com/api/guilds/582952027777138688/widget.png?style=shield)
 
 ## Overview
-ClassicBot functionality is pretty straight forward, you input a command and get responses back depending on the input.
+ClassicBot was designed to enhance Classic World of Warcraft communities by allowing them to link directly to in game tooltips in their discord servers. Now when you get the final piece to craft "Sulfuras, Hand of Ragnaros", but no one is online to see your achievement you can link the item straight into discord so that as many eyes as possible can see the item in all its wonderful glory.
 
 ## Command
 `!classic` is the command that will go in front of every search term. This is to make it as easy as possible for the user to know how to begin their query.
 
 ## Usage
-`!classic` **item** *sulfuras, hand of ragnaros*
 
-![Sulfuras, Hand of Ragnaros](https://raw.githubusercontent.com/mikeStr8s/ClassicBot/master/docs/sulf.png)
+`!classic` **item** "*sulfuras, hand of ragnaros*"
 
 
 ## Feature Requests
@@ -29,9 +24,6 @@ There are a lot of features that I would still like to have be a part of this bo
 - Allowing abilities and their ranks to be queried by users.
 - Allowing variations of items with the same name (Atiesh) to be given parameters to specify which one is desired.
 - Allowing talents, and their ranks to be queried by users.
-
-## Contribution
-Contribution information will be added once an official v1.0.0 of ClassicBot is released.
 
 ## Contributors
 - MikeStr8s *(Owner/Maintainer)*
