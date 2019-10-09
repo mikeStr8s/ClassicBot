@@ -11,6 +11,8 @@ ClassicBot was designed to enhance Classic World of Warcraft communities by allo
 
 ## Usage
 
+**NOTE:** ClassicBot needs the ability to attach and upload files. This is how the tooltip system works.
+
 `!classic` **item** "*sulfuras, hand of ragnaros*"
 
 
