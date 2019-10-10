@@ -3,6 +3,17 @@
 [![Discord Bots](https://discordbots.org/api/widget/status/569926511298084885.svg)](https://discordbots.org/bot/569926511298084885)
 ![Discord Banner 2](https://discordapp.com/api/guilds/582952027777138688/widget.png?style=shield)
 
+## IMPORTANT
+
+Breaking Changes:
+* Wowhead changed the way that their search worked. Required a whole rewrite of a lot of logic and so I just rebuilt from the ground up
+* Ability Search no longer functional. Re-implementation in the future.
+* Command syntax changed, documented below.
+
+**FOR ALL INTENSIVE PURPOSES THIS REPOSITORY IS ARCHIVED. THE CLASSIC WOW COMMUNITY HAS PROVEN TO BE TOO TOXIC TO WORK WITH AT TIMES AND I NO LONGER WISH TO TRY AND PLEASE EVERYONE. IF A CHANGE IS MADE, IT WAS MADE WITH MY DISCRESSION FOR MY NEEDS. IF A FEATURE IS ADDED IT IS WITH MY DISCRESSION AND LIKELY BECAUSE I WANTED IT.**
+
+Good luck and godspeed
+
 ## Overview
 ClassicBot was designed to enhance Classic World of Warcraft communities by allowing them to link directly to in game tooltips in their discord servers. Now when you get the final piece to craft "Sulfuras, Hand of Ragnaros", but no one is online to see your achievement you can link the item straight into discord so that as many eyes as possible can see the item in all its wonderful glory.
 
